@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{19B9557F-544E-46CF-9840-8A9C5AA9FFA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raven.Core", "src\Core\Raven.Core.csproj", "{1FAAFB3F-0951-41B0-93AC-C90963E2ECE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raven.CLI", "src\CLI\Raven.CLI.csproj", "{F51511F2-EE17-400B-B273-A1500E6570B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{8A7D9637-CE86-475F-92A0-42E71C3E513A}"
+	ProjectSection(SolutionItems) = preProject
+		appsettings.example.json = appsettings.example.json
+		sources.example.json = sources.example.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1FAAFB3F-0951-41B0-93AC-C90963E2ECE9} = {19B9557F-544E-46CF-9840-8A9C5AA9FFA0}
+		{F51511F2-EE17-400B-B273-A1500E6570B1} = {19B9557F-544E-46CF-9840-8A9C5AA9FFA0}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1FAAFB3F-0951-41B0-93AC-C90963E2ECE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FAAFB3F-0951-41B0-93AC-C90963E2ECE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FAAFB3F-0951-41B0-93AC-C90963E2ECE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FAAFB3F-0951-41B0-93AC-C90963E2ECE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F51511F2-EE17-400B-B273-A1500E6570B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F51511F2-EE17-400B-B273-A1500E6570B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F51511F2-EE17-400B-B273-A1500E6570B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F51511F2-EE17-400B-B273-A1500E6570B1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,14 @@
+[
+  {
+    "Name": "Microsoft | .NET Blog",
+    "Url": "https://devblogs.microsoft.com/dotnet",
+    "Feed": "https://devblogs.microsoft.com/dotnet/feed",
+    "Image": "https://devblogs.microsoft.com/wp-content/themes/devblogs-evo/images/Microsoft_logo_wht.png"
+  },
+  {
+    "Name": "YouTube | @LowLevelTV",
+    "Url": "https://www.youtube.com/@LowLevelTV",
+    "Feed": "https://www.youtube.com/feeds/videos.xml?channel_id=UCzEaIT_yUdxixGEc8mINGmg",
+    "Image": null
+  }
+]
