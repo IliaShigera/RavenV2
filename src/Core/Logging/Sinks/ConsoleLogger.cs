@@ -1,4 +1,6 @@
-namespace Raven.Core.Logging;
+using Raven.Core.Abstractions;
+
+namespace Raven.Core.Logging.Sinks;
 
 public sealed class ConsoleLogger : ILogger
 {

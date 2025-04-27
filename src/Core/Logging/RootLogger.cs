@@ -1,3 +1,6 @@
+using Raven.Core.Abstractions;
+using Raven.Core.Logging.Sinks;
+
 namespace Raven.Core.Logging;
 
 public sealed class RootLogger : ILogger

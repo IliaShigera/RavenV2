@@ -1,4 +1,4 @@
-namespace Raven.Core.Logging;
+namespace Raven.Core.Configuration;
 
 public sealed class LogConfiguration
 {

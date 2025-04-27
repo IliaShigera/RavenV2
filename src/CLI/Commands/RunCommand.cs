@@ -2,20 +2,20 @@ namespace Raven.CLI.Commands;
 
 internal sealed class RunCommand : ICommand
 {
-    private readonly ILogger _logger;
+    private readonly ILogger _log;
     private readonly TelegramClient _client;
     private readonly TelegramPostFactory _tgPostFactory;
     private readonly RssFetcher _fetcher;
-    private readonly DataStore _store;
+    private readonly IStore _store;
 
     public RunCommand(
-        ILogger logger,
+        ILogger log,
         TelegramClient client, 
         TelegramPostFactory tgPostFactory,
         RssFetcher fetcher, 
-        DataStore store)
+        IStore store)
     {
-        _logger = logger;
+        _log = log;
         _client = client;
         _tgPostFactory = tgPostFactory;
         _fetcher = fetcher;
@@ -31,7 +31,7 @@ internal sealed class RunCommand : ICommand
 
         if (!sources.Any())
         {
-            _logger.Information("No sources found. Exiting.");
+            _log.Information("No sources found. Exiting.");
             return;
         }
 
@@ -41,12 +41,12 @@ internal sealed class RunCommand : ICommand
 
     private async Task ProcessSourceAsync(Source source)
     {
-        _logger.Information($"\nFetching feed for: {source.Name} [{source.Feed}]");
+        _log.Information($"\nFetching feed for: {source.Name} [{source.Feed}]");
 
         var result = await _fetcher.FetchAsync(source);
         if (!result.Ok)
         {
-            _logger.Warning($"Failed to fetch: {result.Error}");
+            _log.Warning($"Failed to fetch: {result.Error}");
             return;
         }
 
@@ -56,7 +56,7 @@ internal sealed class RunCommand : ICommand
 
         if (!posts.Any())
         {
-            _logger.Information("No new posts.");
+            _log.Information("No new posts.");
             await UpdateSourceLastFetchAsync(source);
             return;
         }
@@ -64,13 +64,13 @@ internal sealed class RunCommand : ICommand
         await _store.AddPostsIfNotExistsAsync(posts);
         await UpdateSourceLastFetchAsync(source);
 
-        _logger.Information($"Sending {posts.Count} posts to Telegram...");
+        _log.Information($"Sending {posts.Count} posts to Telegram...");
 
         var sentCount = await SendPostsAsync(source, posts);
         await _store.UpdatePostsAsync(posts);
 
-        _logger.Information($"Sent {sentCount}/{posts.Count} posts");
-        _logger.Information(new string('=', 60));
+        _log.Information($"Sent {sentCount}/{posts.Count} posts");
+        _log.Information(new string('=', 60));
     }
 
     private async Task<int> SendPostsAsync(Source source, List<Post> posts)
@@ -82,11 +82,11 @@ internal sealed class RunCommand : ICommand
             var response = await _client.SendPostAsync(telegramPost);
             if (!response.Ok)
             {
-                _logger.Warning($"Failed to send: {response.Error}");
+                _log.Warning($"Failed to send: {response.Error}");
                 continue;
             }
 
-            _logger.Information($"Sent: {post.Title}");
+            _log.Information($"Sent: {post.Title}");
             post.MarkAsSent();
             sent++;
         }

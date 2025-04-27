@@ -2,10 +2,10 @@ namespace Raven.CLI.Commands;
 
 internal sealed class ListSourcesCommand : ICommand
 {
-    private readonly DataStore _store;
+    private readonly IStore _store;
     private readonly ILogger _log;
 
-    public ListSourcesCommand(DataStore store, ILogger log)
+    public ListSourcesCommand(IStore store, ILogger log)
     {
         _store = store;
         _log = log;
@@ -15,12 +15,6 @@ internal sealed class ListSourcesCommand : ICommand
 
     public async Task ExecuteAsync(string[] args)
     {
-        if (args.Length != 0)
-        {
-            _log.Error("Usage: ls");
-            return;
-        }
-
         var sources = await _store.ListSourcesAsync();
         if (sources.Count == 0)
         {

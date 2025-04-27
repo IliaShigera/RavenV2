@@ -3,6 +3,13 @@ namespace Raven.Core.Modes;
 public sealed class Source
 {
     [JsonConstructor]
+    private Source(int id, string name, string url, string feed, string? image, DateTime? lastFetchedAt)
+        : this(name, url, feed, image)
+    {
+        Id = id;
+        LastFetchedAt = lastFetchedAt;
+    }
+
     private Source(string name, string url, string feed, string? image)
     {
         Name = name;
@@ -38,4 +45,16 @@ public sealed class Source
     }
 
     public void UpdateLastFetchedAt() => LastFetchedAt = DateTime.UtcNow;
+
+    public void Update(string name, string url, string feed, string? image = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+        ArgumentException.ThrowIfNullOrWhiteSpace(url, nameof(url));
+        ArgumentException.ThrowIfNullOrWhiteSpace(feed, nameof(feed));
+
+        Name = name;
+        Url = url;
+        Feed = feed;
+        Image = image;
+    }
 }

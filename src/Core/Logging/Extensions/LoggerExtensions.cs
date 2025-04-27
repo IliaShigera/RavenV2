@@ -1,6 +1,8 @@
-namespace Raven.Core.Logging;
+using Raven.Core.Abstractions;
 
-public static class LoggerExtension
+namespace Raven.Core.Logging.Extensions;
+
+public static class LoggerExtensions
 {
     public static void Information(this ILogger l, string message)
     {

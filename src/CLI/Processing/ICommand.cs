@@ -1,4 +1,4 @@
-namespace Raven.CLI.Commands;
+namespace Raven.CLI.Processing;
 
 internal interface ICommand
 {

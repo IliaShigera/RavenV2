@@ -1,4 +1,4 @@
-namespace Raven.Core.Scrapers;
+namespace Raven.Core.RSS;
 
 public sealed class RssFetcher
 {

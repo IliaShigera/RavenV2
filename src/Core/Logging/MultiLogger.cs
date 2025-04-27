@@ -1,3 +1,5 @@
+using Raven.Core.Abstractions;
+
 namespace Raven.Core.Logging;
 
 public sealed class MultiLogger : ILogger

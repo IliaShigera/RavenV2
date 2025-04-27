@@ -1,4 +1,4 @@
-namespace Raven.Core.Sqlite;
+namespace Raven.Core.Configuration;
 
 public sealed class StoreConfiguration
 {

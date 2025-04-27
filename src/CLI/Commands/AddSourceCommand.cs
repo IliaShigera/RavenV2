@@ -2,28 +2,23 @@ namespace Raven.CLI.Commands;
 
 internal sealed class AddSourceCommand : ICommand
 {
-    private readonly DataStore _store;
+    private readonly IStore _store;
     private readonly ILogger _log;
 
-    public AddSourceCommand(DataStore store, ILogger log)
+    public AddSourceCommand(IStore store, ILogger log)
     {
         _store = store;
         _log = log;
     }
 
     public string Name => "add";
-    
-    private const int ExpectedArgsCount = 4;
 
     public async Task ExecuteAsync(string[] args)
     {
-        if (args.Length != ExpectedArgsCount || args.Any(string.IsNullOrWhiteSpace))
-        {
-            _log.Error("Usage: add-source <name> <url> <feed> <image>");
-            return;
-        }
-
-        ParseArgs(args, out var name, out var url, out var feed, out var image);
+        var name = InputHelper.GetRequiredValue("Name", args.ElementAtOrDefault(0));
+        var url = InputHelper.GetRequiredValue("URL", args.ElementAtOrDefault(1));
+        var feed = InputHelper.GetRequiredValue("Feed", args.ElementAtOrDefault(0));
+        var image = InputHelper.GetOptionalValue("Image", args.ElementAtOrDefault(0));
 
         if (!await _store.IsFeedUniqueAsync(feed))
         {
@@ -35,13 +30,5 @@ internal sealed class AddSourceCommand : ICommand
         await _store.AddSourcesAsync([source]);
 
         _log.Information($"Added source: {name} [{url}] with feed [{feed}] and image [{image}]");
-    }
-
-    private static void ParseArgs(string[] args, out string name, out string url, out string feed, out string image)
-    {
-        name = args[0].Trim();
-        url = args[1].Trim();
-        feed = args[2].Trim();
-        image = args[3].Trim();
     }
 }

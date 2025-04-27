@@ -1,6 +1,8 @@
+using Raven.Core.Abstractions;
+
 namespace Raven.Core.Sqlite;
 
-public sealed class DbInitializer
+public sealed class DbInitializer : IDbInitializer
 {
     private readonly StoreConfiguration _config;
 
@@ -8,7 +10,6 @@ public sealed class DbInitializer
     {
         _config = config;
     }
-
 
     public async Task InitializeAsync()
     {

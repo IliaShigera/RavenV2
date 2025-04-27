@@ -2,10 +2,10 @@ namespace Raven.CLI.Commands;
 
 internal sealed class RemoveSourceCommand : ICommand
 {
-    private readonly DataStore _store;
+    private readonly IStore _store;
     private readonly ILogger _log;
 
-    public RemoveSourceCommand(DataStore store, ILogger log)
+    public RemoveSourceCommand(IStore store, ILogger log)
     {
         _store = store;
         _log = log;
@@ -13,17 +13,10 @@ internal sealed class RemoveSourceCommand : ICommand
 
     public string Name => "rm";
 
-    private const int ExpectedArgsCount = 1;
-
     public async Task ExecuteAsync(string[] args)
     {
-        if (args.Length != ExpectedArgsCount || args.Any(string.IsNullOrWhiteSpace))
-        {
-            _log.Error("Usage: rm <id>");
-            return;
-        }
-
-        if (!int.TryParse(args[0], out var id))
+        var idString = InputHelper.GetRequiredValue("ID", args.ElementAtOrDefault(0));
+        if (!int.TryParse(idString, out var id))
         {
             _log.Error($"Invalid ID: {args[0]}");
             return;

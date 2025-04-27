@@ -1,6 +1,4 @@
-﻿using Raven.CLI;
-
-var rootConfig = new ConfigurationBuilder()
+﻿var rootConfig = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables(prefix: "RAVEN_")
     .Build();
@@ -12,7 +10,6 @@ var telegramConfig = new TelegramConfiguration(
     rootConfig["Telegram:ChatId"]!
 );
 var defaultPreviewImage = rootConfig["Telegram:PostSettings:DefaultPreviewImage"]!;
-;
 
 var services = new ServiceCollection();
 services.AddSingleton(logConfig);
@@ -31,21 +28,23 @@ services.AddSingleton<HttpClient>(_ =>
 });
 
 services.AddSingleton<RssFetcher>();
-services.AddSingleton<DbInitializer>();
-services.AddSingleton<DataStore>();
+services.AddSingleton<IDbInitializer, DbInitializer>();
+services.AddSingleton<IStore, SqliteStore>();
 services.AddSingleton<TelegramClient>();
 services.AddSingleton<TelegramPostFactory>(_ => new TelegramPostFactory(defaultPreviewImage));
 
 services.AddScoped<ICommand, AddSourceCommand>();
 services.AddScoped<ICommand, ListSourcesCommand>();
+services.AddScoped<ICommand, UpdateSourceCommand>();
 services.AddScoped<ICommand, RemoveSourceCommand>();
 services.AddScoped<ICommand, ImportSourcesCommand>();
+services.AddScoped<ICommand, ExportSourcesCommand>();
 services.AddScoped<ICommand, RunCommand>();
 services.AddScoped<CommandDispatcher>();
 
 await using var sp = services.BuildServiceProvider();
 var logger = sp.GetRequiredService<ILogger>();
-var dbInitializer = sp.GetRequiredService<DbInitializer>();
+var dbInitializer = sp.GetRequiredService<IDbInitializer>();
 var dispatcher = sp.GetRequiredService<CommandDispatcher>();
 try
 {

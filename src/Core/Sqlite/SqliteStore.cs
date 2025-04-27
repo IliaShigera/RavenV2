@@ -1,10 +1,12 @@
+using Raven.Core.Abstractions;
+
 namespace Raven.Core.Sqlite;
 
-public sealed class DataStore
+public sealed class SqliteStore : IStore
 {
     private readonly StoreConfiguration _config;
 
-    public DataStore(StoreConfiguration config)
+    public SqliteStore(StoreConfiguration config)
     {
         _config = config;
     }
@@ -17,8 +19,8 @@ public sealed class DataStore
         await using var command = conn.CreateCommand();
         command.CommandText =
             """
-            INSERT INTO Sources (Name, Url, Feed, Image)
-            VALUES (@name, @url, @feed, @image);
+            INSERT INTO Sources (Name, Url, Feed, Image, LastFetchedAt)
+            VALUES (@name, @url, @feed, @image, @lastFetchedAt);
             """;
 
         foreach (var s in sources)
@@ -29,6 +31,7 @@ public sealed class DataStore
             command.Parameters.AddWithValue("@url", s.Url);
             command.Parameters.AddWithValue("@feed", s.Feed);
             command.Parameters.AddWithValue("@image", (object?)s.Image ?? DBNull.Value);
+            command.Parameters.AddWithValue("@lastFetchedAt", (object?)s.LastFetchedAt ?? DBNull.Value);
 
             await command.ExecuteNonQueryAsync();
         }
@@ -82,12 +85,16 @@ public sealed class DataStore
         while (await reader.ReadAsync())
         {
             return Source.FromDb(
-                reader.GetInt32(0),
-                reader.GetString(1),
-                reader.GetString(2),
-                reader.GetString(3),
-                reader.GetString(4),
-                reader.IsDBNull(5) ? null : reader.GetDateTime(5)
+                reader.GetInt32(reader.GetOrdinal("Id")),
+                reader.GetString(reader.GetOrdinal("Name")),
+                reader.GetString(reader.GetOrdinal("Url")),
+                reader.GetString(reader.GetOrdinal("Feed")),
+                reader.IsDBNull(reader.GetOrdinal("Image"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("Image")),
+                reader.IsDBNull(reader.GetOrdinal("LastFetchedAt"))
+                    ? null
+                    : reader.GetDateTime(reader.GetOrdinal("LastFetchedAt"))
             );
         }
 
@@ -108,7 +115,6 @@ public sealed class DataStore
         return count is long and 0;
     }
 
-    /// <summary> Updates LastFetchedAt </summary>
     public async Task UpdateSourceAsync(Source source)
     {
         await using var conn = new SqliteConnection(_config.ConnectionString);
@@ -118,11 +124,20 @@ public sealed class DataStore
         command.CommandText =
             """
             UPDATE Sources
-            SET LastFetchedAt = @lastFetchedAt
+            SET 
+                Name = @name,
+                Url = @url,
+                Feed = @feed,
+                Image = @image,
+                LastFetchedAt = @lastFetchedAt
             WHERE Id = @id;
             """;
 
-        command.Parameters.AddWithValue("@lastFetchedAt", source.LastFetchedAt);
+        command.Parameters.AddWithValue("@name", source.Name);
+        command.Parameters.AddWithValue("@url", source.Url);
+        command.Parameters.AddWithValue("@feed", source.Feed);
+        command.Parameters.AddWithValue("@image", (object?)source.Image ?? DBNull.Value);
+        command.Parameters.AddWithValue("@lastFetchedAt", (object?)source.LastFetchedAt ?? DBNull.Value);
         command.Parameters.AddWithValue("@id", source.Id);
 
         await command.ExecuteNonQueryAsync();

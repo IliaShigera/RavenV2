@@ -1,4 +1,4 @@
-namespace Raven.Core.Telegram;
+namespace Raven.Core.Configuration;
 
 public sealed class TelegramConfiguration
 {

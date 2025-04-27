@@ -1,4 +1,4 @@
-namespace Raven.Core.Logging;
+namespace Raven.Core.Abstractions;
 
 public interface ILogger
 {

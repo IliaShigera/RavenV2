@@ -1,4 +1,4 @@
-namespace Raven.CLI.Commands;
+namespace Raven.CLI.Processing;
 
 internal sealed class CommandDispatcher
 {
@@ -41,9 +41,12 @@ internal sealed class CommandDispatcher
             Commands:
                 run                  Fetches new posts from all configured sources and sends them to Telegram.
                 import <path>        Imports new sources from JSON file. (see sources.example.json)
-                ls                   List all configured sources.
+                export <path>        Exports all sources to JSON file.
+                                     Example: raven export sources.json
                 add <name> <url> <feed-url> <image-url>   Add a new source.
                                      Example: raven add "Tech Blog" "https://techblog.com "https://techblog.com/rss" "https://techblog.com/image.png"
+                ls                   List all configured sources.
+                Update <id> <name> <url> <feed-url> <image-url>   Update a source by ID.
                 rm <id>              Remove a source by ID.
                                      Example: raven remove 1
                 help                 Show this message.
