@@ -3,14 +3,14 @@ namespace Raven.Core.Telegram;
 public sealed class TelegramPostFactory
 {
     private const int MaxDescLength = 625;
-    
-    private readonly string _defaultPreviewImageUrl;
 
-    public TelegramPostFactory(string defaultPreviewImageUrl)
+    private readonly TelegramPostSettings _settings;
+
+    public TelegramPostFactory(TelegramPostSettings settings)
     {
-        ArgumentNullException.ThrowIfNull(defaultPreviewImageUrl);
+        ArgumentNullException.ThrowIfNull(settings);
 
-        _defaultPreviewImageUrl = defaultPreviewImageUrl;
+        _settings = settings;
     }
 
     public TelegramPost CreateFrom(Source source, Post post)
@@ -19,7 +19,10 @@ public sealed class TelegramPostFactory
         ArgumentNullException.ThrowIfNull(post, nameof(post));
 
         var pubDate = post.PublishedAt?.ToString("MMMM dd, yyyy") ?? DateTime.Now.ToString("MMMM dd, yyyy");
-        var previewImageUrl = post.Thumbnail ?? source.Image ?? _defaultPreviewImageUrl;
+        var preview = post.Thumbnail is not null && Uri.TryCreate(post.Thumbnail, UriKind.Absolute, out var uri)
+            ? uri.AbsoluteUri
+            : source.Image ?? _settings.DefaultPreviewImage;
+
         var sb = new StringBuilder();
 
         sb.AppendLine($"<b>{post.Title}</b>");
@@ -30,22 +33,25 @@ public sealed class TelegramPostFactory
 
         if (!string.IsNullOrWhiteSpace(post.Desc))
         {
-            if (post.Desc.Length > MaxDescLength)
+            var decoded = WebUtility.HtmlDecode(post.Desc);
+            var plainText = Regex.Replace(decoded, "<.*?>", string.Empty);
+
+            if (plainText.Length > MaxDescLength)
             {
-                var raw = WebUtility.HtmlDecode(post.Desc);
-                var lastSpace = raw.LastIndexOf(' ', MaxDescLength);
-                if (lastSpace > 0)
-                    sb.AppendLine(raw[..lastSpace] + "...");
+                var safeStart = Math.Min(MaxDescLength, plainText.Length - 1);
+                var lastSpace = plainText.LastIndexOf(' ', safeStart);
+                if (lastSpace > 0) sb.AppendLine(plainText[..lastSpace] + "...");
+                else sb.AppendLine(plainText[..safeStart] + "...");
             }
             else
-                sb.AppendLine(EscapeHtml(post.Desc));
+                sb.AppendLine(plainText);
 
             sb.AppendLine();
         }
 
         sb.AppendLine(EscapeHtml(post.Link));
 
-        return new TelegramPost(sb.ToString(), previewImageUrl);
+        return new TelegramPost(sb.ToString(), preview);
     }
 
 

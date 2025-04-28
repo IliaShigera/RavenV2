@@ -1,3 +1,5 @@
+using SQLitePCL;
+
 namespace Raven.Core.RSS;
 
 public sealed class RssFetcher
@@ -21,7 +23,7 @@ public sealed class RssFetcher
                 .Select(item => Post.Create(
                     title: item.Title?.Text ?? source.Name,
                     desc: item.Summary?.Text,
-                    thumbnail: TryExtractPostPreviewImage(item) ?? feed.ImageUrl?.ToString() ?? null,
+                    thumbnail: TryExtractThumbnailOrDefault(item),
                     link: item.Links.FirstOrDefault()?.Uri.ToString()!,
                     publishedAt: item.PublishDate.UtcDateTime,
                     sourceId: source.Id
@@ -37,7 +39,7 @@ public sealed class RssFetcher
     }
 
 
-    private static string? TryExtractPostPreviewImage(SyndicationItem item)
+    private static string? TryExtractThumbnailOrDefault(SyndicationItem item)
     {
         // YT - check <media:thumbnail> in <media:group>
         var mediaGroup = item.ElementExtensions
@@ -87,15 +89,6 @@ public sealed class RssFetcher
 
         if (enclosure is not null)
             return enclosure.Uri?.ToString();
-
-        // idk, some edge case
-        // var customImage = item.ElementExtensions
-        //     .FirstOrDefault(e => e.OuterName == "image" &&
-        //                          (e.OuterNamespace == "http://purl.org/dc/elements/1.1/" ||
-        //                           e.OuterNamespace == "http://ogp.me/ns#"));
-        //
-        // if (customImage is not null)
-        //     return customImage.GetReader().ReadElementContentAsString();
 
         // No preview image 
         return null;

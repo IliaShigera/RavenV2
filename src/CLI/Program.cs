@@ -9,12 +9,14 @@ var telegramConfig = new TelegramConfiguration(
     rootConfig["Telegram:Token"]!,
     rootConfig["Telegram:ChatId"]!
 );
-var defaultPreviewImage = rootConfig["Telegram:PostSettings:DefaultPreviewImage"]!;
+
+var telegramPostSettings = new TelegramPostSettings(rootConfig["Telegram:PostSettings:DefaultPreviewImage"]!);
 
 var services = new ServiceCollection();
 services.AddSingleton(logConfig);
 services.AddSingleton(storeConfig);
 services.AddSingleton(telegramConfig);
+services.AddSingleton(telegramPostSettings);
 
 services.AddSingleton<ILogger>(RootLogger.Create(logConfig));
 
@@ -31,7 +33,7 @@ services.AddSingleton<RssFetcher>();
 services.AddSingleton<IDbInitializer, DbInitializer>();
 services.AddSingleton<IStore, SqliteStore>();
 services.AddSingleton<TelegramClient>();
-services.AddSingleton<TelegramPostFactory>(_ => new TelegramPostFactory(defaultPreviewImage));
+services.AddSingleton<TelegramPostFactory>(_ => new TelegramPostFactory(telegramPostSettings));
 
 services.AddScoped<ICommand, AddSourceCommand>();
 services.AddScoped<ICommand, ListSourcesCommand>();

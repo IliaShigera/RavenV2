@@ -216,8 +216,8 @@ public sealed class SqliteStore : IStore
             command.Parameters.Clear();
 
             command.Parameters.AddWithValue("@title", post.Title);
-            command.Parameters.AddWithValue("@desc", post.Desc);
-            command.Parameters.AddWithValue("@thumbnail", post.Thumbnail);
+            command.Parameters.AddWithValue("@desc", (object?)post.Desc ?? DBNull.Value);
+            command.Parameters.AddWithValue("@thumbnail", (object?)post.Thumbnail ?? DBNull.Value);
             command.Parameters.AddWithValue("@link", post.Link);
             command.Parameters.AddWithValue("@publishedAt", post.PublishedAt);
             command.Parameters.AddWithValue("@sentAt", (object?)post.SentAt ?? DBNull.Value);
